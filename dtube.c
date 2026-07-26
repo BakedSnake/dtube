@@ -36,9 +36,7 @@ int main(void)
     if (!m) return 1;
 
     char choice[32];
-    while(fgets(choice, sizeof(choice), m)) {
-        printf("Choice: %s", choice);
-    }
+    fgets(choice, sizeof(choice), m);
 
     if (strcmp(choice, "4. QUIT\n") == 0) {
         pclose(m);
@@ -49,9 +47,7 @@ int main(void)
         if (!sp) return 1;
 
         char query[128];
-        while(fgets(query, sizeof(query), sp)) {
-            printf("%s", query);
-        }
+        fgets(query, sizeof(query), sp);
         query[strcspn(query, "\n")] = '\0';
 
         char *search_cmd = get_search_cmd(query);
@@ -102,7 +98,8 @@ int main(void)
 char *get_main_menu(void)
 {
     char *cmd = malloc(256);
-    snprintf(cmd, 256, "echo '1. PLAY VIDEO\n2. DOWNLOAD VIDEO\n3. GET URL\n4. QUIT' | %s -l 4 -p 'DDTUBE:'", DMENU);
+    snprintf(cmd, 256,
+            "echo '1. PLAY VIDEO\n2. DOWNLOAD VIDEO\n3. GET URL\n4. QUIT' | %s -l 4 -p 'DDTUBE:'", DMENU);
     return cmd;
 }
 
@@ -144,7 +141,6 @@ char *get_url_copy(char *url)
 {
     char *cmd = malloc(256);
     snprintf(cmd, 256, "echo '%s' | %s -in -selection clipboard", url, XCLIP);
-    printf("%s\n", cmd);
     return cmd;
 }
 
