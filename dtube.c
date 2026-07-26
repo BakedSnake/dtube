@@ -9,6 +9,7 @@ char MPV[25]    = "/usr/bin/mpv";
 char XCLIP[32]  = "/usr/bin/xclip";
 char HEIGHT[4]  = "720";
 char LENGTH[3]  = "10";
+char DFLAGS[64];
 
 int check_deps(void)
 {
@@ -26,10 +27,25 @@ int check_deps(void)
     return 1;
 }
 
-int main(void)
+void gset_dmenu_flags(int argc, char **argv)
+{
+    for (int i = 1; i < argc; ++i) {
+        if (strstr(argv[i], "-") == NULL) {
+            strcat(DFLAGS, "\"");
+            strcat(DFLAGS, argv[i]);
+            strcat(DFLAGS, "\" ");
+        } else {
+            strcat(DFLAGS, argv[i]);
+            strcat(DFLAGS, " ");
+        }
+    }
+}
+
+int main(int argc, char **argv)
 {
     char *url = malloc(256);
     if (!check_deps()) return 1;
+    gset_dmenu_flags(argc, argv);
 
     char *menu = get_main_menu();
     FILE *m = popen(menu, "r");
@@ -123,14 +139,14 @@ char *get_main_menu(void)
             "3. DOWNLOAD VIDEO\n"
             "4. DOWNLOAD VIDEO FROM URL\n"
             "5. GET URL\n"
-            "6. QUIT' | %s -l 6 -p 'DTUBE:'", DMENU);
+            "6. QUIT' | %s %s -l 6 -p 'DTUBE:'", DMENU, DFLAGS);
     return cmd;
 }
 
 char *get_search_prompt(void)
 {
     char *cmd = malloc(128);
-    snprintf(cmd, 128, "echo | %s -p 'DTUBE [YTSEARCH]:'", DMENU);
+    snprintf(cmd, 128, "echo | %s %s -p 'DTUBE [YTSEARCH]:'", DMENU, DFLAGS);
     return cmd;
 }
 

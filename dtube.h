@@ -9,6 +9,7 @@ extern char MPV[25];
 extern char XCLIP[32];
 extern char HEIGHT[4];
 extern char LENGTH[3];
+extern char DFLAGS[64];
 
 /*
  * Creates main menu options
