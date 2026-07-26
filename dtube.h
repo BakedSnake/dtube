@@ -46,4 +46,10 @@ char *get_download_cmd(char *url);
 
 char *get_url_copy(char *url);
 
+/*
+ * Create Get clipboard content command
+ */
+
+char *get_from_clipboard_cmd(void);
+
 #endif

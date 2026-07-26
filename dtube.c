@@ -38,10 +38,13 @@ int main(void)
     char choice[32];
     fgets(choice, sizeof(choice), m);
 
-    if (strcmp(choice, "4. QUIT\n") == 0) {
+    if (strcmp(choice, "6. QUIT\n") == 0) {
         pclose(m);
         return 0;
-    } else {
+    }
+
+    if (strcmp(choice, "1. PLAY VIDEO\n") == 0
+    || strcmp(choice, "3. DOWNLOAD VIDEO\n") == 0) {
         char *prompt = get_search_prompt();
         FILE *sp = popen(prompt, "r");
         if (!sp) return 1;
@@ -77,13 +80,29 @@ int main(void)
         free(playback_cmd);
     }
 
-    if (strcmp(choice, "2. DOWNLOAD VIDEO\n") == 0) {
+    if (strcmp(choice, "2. PLAY VIDEO FROM URL\n") == 0) {
+        char *selection = get_from_clipboard_cmd();
+        char *playback_cmd = get_video_cmd(selection);
+        system(playback_cmd);
+        free(playback_cmd);
+        free(selection);
+    }
+
+    if (strcmp(choice, "3. DOWNLOAD VIDEO\n") == 0) {
         char *download_cmd = get_download_cmd(url);
         system(download_cmd);
         free(download_cmd);
     }
 
-    if (strcmp(choice, "3. GET URL\n") == 0) {
+    if (strcmp(choice, "4. DOWNLOAD VIDEO FROM URL\n") == 0) {
+        char *selection = get_from_clipboard_cmd();
+        char *download_cmd = get_download_cmd(selection);
+        system(download_cmd);
+        free(download_cmd);
+        free(selection);
+    }
+
+    if (strcmp(choice, "5. GET URL\n") == 0) {
         url[strcspn(url, "\n")] = '\0';
         char *copy_url = get_url_copy(url);
         system(copy_url);
@@ -99,7 +118,12 @@ char *get_main_menu(void)
 {
     char *cmd = malloc(256);
     snprintf(cmd, 256,
-            "echo '1. PLAY VIDEO\n2. DOWNLOAD VIDEO\n3. GET URL\n4. QUIT' | %s -l 4 -p 'DDTUBE:'", DMENU);
+            "echo '1. PLAY VIDEO\n"
+            "2. PLAY VIDEO FROM URL\n"
+            "3. DOWNLOAD VIDEO\n"
+            "4. DOWNLOAD VIDEO FROM URL\n"
+            "5. GET URL\n"
+            "6. QUIT' | %s -l 6 -p 'DTUBE:'", DMENU);
     return cmd;
 }
 
@@ -144,3 +168,15 @@ char *get_url_copy(char *url)
     return cmd;
 }
 
+char *get_from_clipboard_cmd(void)
+{
+    char *cmd = malloc(256);
+    snprintf(cmd, 256, "%s -selection clipboard -o", XCLIP);
+    FILE *cl = popen(cmd, "r");
+    if (!cl) fprintf(stderr, "Could not get clipboard selection\n");
+    free(cmd);
+
+    char *sel = malloc(256);
+    fgets(sel, 256, cl);
+    return sel;
+}
