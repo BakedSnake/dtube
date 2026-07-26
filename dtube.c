@@ -13,7 +13,7 @@ char LENGTH[3]  = "10";
 int check_deps(void)
 {
     char *deps[] = { DMENU, YTDLP, MPV, XCLIP };
-    for (size_t i = 0; i < 3; ++i) {
+    for (size_t i = 0; i < 4; ++i) {
         FILE *f = fopen(deps[i], "r");
         if (!f) {
             fprintf(stderr, "Could not find %s\n", deps[i]);
