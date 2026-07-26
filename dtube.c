@@ -157,7 +157,7 @@ char *get_search_cmd(char *query)
     strcat(cmd_str, "--print \"%(title)-64.64s  >> %(webpage_url)s\" ");
     
     char dm_cmd[128];
-    snprintf(dm_cmd, 128, "| dmenu -l %s -p \"DTUBE:\"", LENGTH);
+    snprintf(dm_cmd, 128, "| %s %s -l %s -p \"DTUBE:\"", DMENU, DFLAGS, LENGTH);
     strcat(cmd_str, dm_cmd);
 
     return cmd_str;
