@@ -17,4 +17,4 @@
 - Get video url
 
 ## LICENSE
-GPL-2.0
+MIT
