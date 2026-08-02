@@ -145,8 +145,8 @@ char *get_main_menu(void)
 
 char *get_search_prompt(void)
 {
-    char *cmd = malloc(128);
-    snprintf(cmd, 128, "echo | %s %s -p 'DTUBE [YTSEARCH]:'", DMENU, DFLAGS);
+    char *cmd = malloc(256);
+    snprintf(cmd, 256, "echo | %s %s -p 'DTUBE [YTSEARCH]:'", DMENU, DFLAGS);
     return cmd;
 }
 
