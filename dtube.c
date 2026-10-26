@@ -1,7 +1,10 @@
-#include "dtube.h"
+#define _POSIX_C_SOURCE 200112L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "dtube.h"
 
 char DMENU[40]  = "/usr/local/bin/dmenu";
 char YTDLP[25]  = "/usr/bin/yt-dlp";
@@ -43,7 +46,7 @@ void gset_dmenu_flags(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-    char *url = malloc(256);
+    char *url = malloc(BUFSIZE);
     if (!check_deps()) return 1;
     gset_dmenu_flags(argc, argv);
 
@@ -65,7 +68,7 @@ int main(int argc, char **argv)
         FILE *sp = popen(prompt, "r");
         if (!sp) return 1;
 
-        char query[128];
+        char query[QUESIZE];
         fgets(query, sizeof(query), sp);
         query[strcspn(query, "\n")] = '\0';
 
@@ -73,7 +76,7 @@ int main(int argc, char **argv)
         FILE *sc = popen(search_cmd, "r");
         if (!sc) return 1;
 
-        char line[256];
+        char line[BUFSIZE];
         while(fgets(line, sizeof(line), sc)) {
             char *token = strtok(line, ">> ");
             char *last = token;
@@ -132,8 +135,8 @@ int main(int argc, char **argv)
 
 char *get_main_menu(void)
 {
-    char *cmd = malloc(256);
-    snprintf(cmd, 256,
+    char *cmd = malloc(BUFSIZE);
+    snprintf(cmd, BUFSIZE,
             "echo '1. PLAY VIDEO\n"
             "2. PLAY VIDEO FROM URL\n"
             "3. DOWNLOAD VIDEO\n"
@@ -145,19 +148,19 @@ char *get_main_menu(void)
 
 char *get_search_prompt(void)
 {
-    char *cmd = malloc(256);
-    snprintf(cmd, 256, "echo | %s %s -p 'DTUBE [YTSEARCH]:'", DMENU, DFLAGS);
+    char *cmd = malloc(BUFSIZE);
+    snprintf(cmd, BUFSIZE, "echo | %s %s -p 'DTUBE [YTSEARCH]:'", DMENU, DFLAGS);
     return cmd;
 }
 
 char *get_search_cmd(char *query)
 {
-    char *cmd_str = malloc(256);
-    snprintf(cmd_str, 128, "yt-dlp ytsearch%s:'%s' ", LENGTH, query);
+    char *cmd_str = malloc(BUFSIZE);
+    snprintf(cmd_str, QUESIZE, "yt-dlp ytsearch%s:'%s' ", LENGTH, query);
     strcat(cmd_str, "--print \"%(title)-64.64s  >> %(webpage_url)s\" ");
     
-    char dm_cmd[128];
-    snprintf(dm_cmd, 128, "| %s %s -l %s -p \"DTUBE:\"", DMENU, DFLAGS, LENGTH);
+    char dm_cmd[QUESIZE];
+    snprintf(dm_cmd, QUESIZE, "| %s %s -l %s -p \"DTUBE:\"", DMENU, DFLAGS, LENGTH);
     strcat(cmd_str, dm_cmd);
 
     return cmd_str;
@@ -165,34 +168,34 @@ char *get_search_cmd(char *query)
 
 char *get_video_cmd(char *url)
 {
-    char *cmd = malloc(128);
-    snprintf(cmd, 128, "%s --ytdl --ytdl-format='bv*[height=%s]+ba' '%s'", MPV, HEIGHT, url);
+    char *cmd = malloc(QUESIZE);
+    snprintf(cmd, QUESIZE, "%s --ytdl --ytdl-format='bv*[height=%s]+ba' '%s'", MPV, HEIGHT, url);
     return cmd;
 }
 
 char *get_download_cmd(char *url)
 {
-    char *cmd = malloc(256);
-    snprintf(cmd, 256, "%s -f 'bv*[height=%s]+ba' '%s'", YTDLP, HEIGHT, url);
+    char *cmd = malloc(BUFSIZE);
+    snprintf(cmd, BUFSIZE, "%s -f 'bv*[height=%s]+ba' '%s'", YTDLP, HEIGHT, url);
     return cmd;
 }
 
 char *get_url_copy(char *url)
 {
-    char *cmd = malloc(256);
-    snprintf(cmd, 256, "echo '%s' | %s -in -selection clipboard", url, XCLIP);
+    char *cmd = malloc(BUFSIZE);
+    snprintf(cmd, BUFSIZE, "echo '%s' | %s -in -selection clipboard", url, XCLIP);
     return cmd;
 }
 
 char *get_from_clipboard_cmd(void)
 {
-    char *cmd = malloc(256);
-    snprintf(cmd, 256, "%s -selection clipboard -o", XCLIP);
+    char *cmd = malloc(BUFSIZE);
+    snprintf(cmd, BUFSIZE, "%s -selection clipboard -o", XCLIP);
     FILE *cl = popen(cmd, "r");
     if (!cl) fprintf(stderr, "Could not get clipboard selection\n");
     free(cmd);
 
-    char *sel = malloc(256);
-    fgets(sel, 256, cl);
+    char *sel = malloc(BUFSIZE);
+    fgets(sel, BUFSIZE, cl);
     return sel;
 }

@@ -1,7 +1,8 @@
-#define _POSIX_C_SOURCE 200112L
-
 #ifndef DTUBE_H
 #define DTUBE_H
+
+#define BUFSIZE 512
+#define QUESIZE 256
 
 extern char DMENU[40];
 extern char YTDLP[25];
