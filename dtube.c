@@ -168,8 +168,11 @@ char *get_search_cmd(char *query)
 
 char *get_video_cmd(char *url)
 {
-    char *cmd = malloc(QUESIZE);
-    snprintf(cmd, QUESIZE, "%s --ytdl --ytdl-format='bv*[height=%s]+ba' '%s'", MPV, HEIGHT, url);
+    char *cmd = malloc(BUFSIZE);
+    char subopts[QUESIZE] = "--ytdl-raw-options=embed-subs=,sub-langs=en,write-subs=,write-auto-subs=";
+    snprintf(cmd, BUFSIZE,
+            "%s --ytdl %s --ytdl-format='bv*[height=%s]+ba' '%s'",
+            MPV, subopts, HEIGHT, url);
     return cmd;
 }
 
